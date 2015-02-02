@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tic Tac Toe</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<style type="text/css">
+		.canvas{
+			width: 100%;
+			//height: 664px;
+			position: relative;
+			background-color: #808080;
+			font-family: Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif ;
+		}
+		.square{
+			width: 300px;
+			height: 300px;
+			position: absolute;
+			left: 38%;
+			top: 28%;
+			overflow: hidden;
+		}
+		.tile{
+			border: 1px solid #808080;
+			background-color: #FFFFFF;
+			width: 98px;
+			height: 98px;
+			float: left;
+			font-size: 85px;
+			font-weight: bolder;
+			text-align: center;
+			color: #808080;
+		}
+		
+	</style>
+</head>
+<body>
+<div class="canvas">
+	<div class="square">
+		<div class="tile" id="tile1"></div>
+		<div class="tile" id="tile2"></div>
+		<div class="tile" id="tile3"></div>
+		<div class="tile" id="tile4"></div>
+		<div class="tile" id="tile5"></div>
+		<div class="tile" id="tile6"></div>
+		<div class="tile" id="tile7"></div>
+		<div class="tile" id="tile8"></div>
+		<div class="tile" id="tile9"></div>
+	</div>
+</div>
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var wh = $(window).height() - 16;
+		$('.canvas').css('height', wh);
+	});
+
+
+	var cx,aiMoveCx,HU = false,AI = true;
+	var arr = [];
+	var tarr = [];
+	var p1 = true,p2 = false,ai = false;
+	var pFirstMove = true, aiFirstMove = false;
+	var t1,t2,t3,t4,t5,t6,t7,t8,t9;
+	event_function = {
+		initialize: function(){
+			cx = 0;
+			aiMoveCx = 0;
+
+			arr = ['-', '-', '-', '-', '-', '-', '-', '-', '-'];
+
+			t1 = $('#tile1');
+			t2 = $('#tile2');
+			t3 = $('#tile3');
+			t4 = $('#tile4');
+			t5 = $('#tile5');
+			t6 = $('#tile6');
+			t7 = $('#tile7');
+			t8 = $('#tile8');
+			t9 = $('#tile9');
+
+			tarr = [t1,t2,t3,t4,t5,t6,t7,t8,t9];
+
+			t1.text('');
+			t2.text('');
+			t3.text('');
+			t4.text('');
+			t5.text('');
+			t6.text('');
+			t7.text('');
+			t8.text('');
+			t9.text('');
+
+			if(ai){
+				event_function.ai_move();
+			}
+		},
+
+		ai_move: function(){
+			if(aiMoveCx == 0){
+				for(var i = 0 ; i < 9 ; i++){
+					var r = Math.floor(Math.random() * 8);
+					if(arr[r] == '-'){
+						arr[r] = 'O';
+						aiMoveCx++;
+						event_function.set_text(tarr[r]);
+						break;
+					}
+				}
+			}else{
+				pPossMoves = ['012','048','036','147','246','258','345','678'];
+				var moveDone = false;
+				
+				for( var i = 0 ; i < 8 ; i++){
+					if(event_function.check_ai_moves_one_left_to_done(pPossMoves[i]) == 2){
+						console.log('AI ONE LEFT:'+pPossMoves[i]);
+						for(var j = 0 ; j < 3 ; j++){
+							if(arr[parseInt(pPossMoves[i][j])] == '-'){
+								arr[parseInt(pPossMoves[i][j])] = 'O';
+								event_function.set_text(tarr[parseInt(pPossMoves[i][j])]);
+								moveDone = true;
+								break;
+							}
+						}
+					}
+					if(moveDone) break;
+				}
+				if(!moveDone){
+					for( var i = 0 ; i < 8 ; i++){
+						if(event_function.check_p_moves_one_left_to_done(pPossMoves[i]) == 2){
+							console.log('P ONE LEFT:'+pPossMoves[i]);
+							for(var j = 0 ; j < 3 ; j++){
+								if(arr[parseInt(pPossMoves[i][j])] == '-'){
+									arr[parseInt(pPossMoves[i][j])] = 'O';
+									event_function.set_text(tarr[parseInt(pPossMoves[i][j])]);
+									moveDone = true;
+									break;
+								}
+							}
+						}
+						if(moveDone) break;
+					}
+				}
+				if(!moveDone){
+					for( var i = 0 ; i < 8 ; i++){
+						if(event_function.check_ai_moves_two_left_to_done(pPossMoves[i]) == 2){
+							console.log('AI TWO LEFT:'+pPossMoves[i]);
+							for(var j = 0 ; j < 3 ; j++){
+								if(arr[parseInt(pPossMoves[i][j])] == '-'){
+									arr[parseInt(pPossMoves[i][j])] = 'O';
+									event_function.set_text(tarr[parseInt(pPossMoves[i][j])]);
+									moveDone = true;
+									break;
+								}
+							}
+						}
+						if(moveDone) break;
+					}
+				}
+				if(!moveDone){
+					for( var i = 0 ; i < 9 ; i++){
+						if(arr[i] == '-'){
+							arr[i] = '0';
+							event_function.set_text(tarr[i]);
+							break;
+						}
+					}
+				}
+			}
+		},
+
+		check_p_moves_one_left_to_done: function(m){
+			var cxm = 0;
+			for (var i = 0; i < 3; i++) {
+				if(arr[parseInt(m[i])] == 'X'){
+					cxm++;
+				}else if(arr[parseInt(m[i])] == 'O'){
+					return 0;
+				}
+			}
+			return cxm;
+		},
+
+		check_ai_moves_one_left_to_done: function(m){
+			var cxm = 0;
+			for (var i = 0; i < 3; i++) {
+				if(arr[parseInt(m[i])] == 'O'){
+					cxm++;
+				}else if(arr[parseInt(m[i])] == 'X'){
+					return 0;
+				}
+			}
+			return cxm;
+		},
+
+		check_ai_moves_two_left_to_done: function(m){
+			var cxm = 0;
+			var oneMoveExist = false;
+			for (var i = 0; i < 3; i++) {
+				if(arr[parseInt(m[i])] == '-'){
+					cxm++;
+				}else if(arr[parseInt(m[i])] == 'X'){
+					return 0;
+				}else if(arr[parseInt(m[i])] == 'O'){
+					oneMoveExist = true;
+				}
+			}
+			if(oneMoveExist){
+				return cxm
+			}else{
+				return 0;
+			}
+		},
+
+		set_text: function(t){
+			if(HU){
+				if(t.text() == ''){
+					cx++;
+					if(p1){
+						t.text('X');
+						p1 = false;
+						p2 = true;
+					}else{
+						t.text('O');
+						p1 = true;
+						p2 = false;
+					}
+					event_function.check_game_end();
+				}
+			}else if(AI){
+				cx++;
+				if(p1){
+					t.text('X');
+					p1 = false;
+					ai = true;
+					if(event_function.check_game_end()){
+						event_function.initialize();
+					}else{
+						event_function.ai_move();
+					}
+				}else{
+					t.text('O');
+					p1 = true;
+					ai = false;
+					if(event_function.check_game_end()){
+						event_function.initialize();
+					}
+				}
+
+			}
+		},
+
+		check_game_end: function(){
+
+			if(event_function.are_equal(t1.text(), t2.text(), t3.text())){
+				if(t1.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+					
+				}
+				return true;
+			}else if(event_function.are_equal(t1.text(), t5.text(), t9.text())){
+				if(t1.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+				}
+				return true;
+			}else if(event_function.are_equal(t1.text(), t4.text(), t7.text())){
+				if(t1.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+				}
+				return true;
+			}else if(event_function.are_equal(t2.text(), t5.text(), t8.text())){
+				if(t2.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+				}
+				return true;
+			}else if(event_function.are_equal(t3.text(), t6.text(), t9.text())){
+				if(t3.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+				}
+				return true;
+			}else if(event_function.are_equal(t3.text(), t5.text(), t7.text())){
+				if(t3.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+				}
+				return true;
+			}else if(event_function.are_equal(t4.text(), t5.text(), t6.text())){
+				if(t4.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+				}
+				return true;
+			}else if(event_function.are_equal(t7.text(), t8.text(), t9.text())){
+				if(t7.text() == 'X'){
+					alert("Game Over: Player 1 Wins!");
+				}else{
+					if(AI){
+						alert("Game Over: AI Wins!");
+					}else{
+						alert("Game Over: Player 2 Wins!");
+					}
+				}
+				return true;
+			}else if(cx == 9){
+				alert("Game Tied! Play Again");
+				return true;
+			}
+		},
+
+		are_equal: function(a,b,c){
+			if(a != '' && b != '' && c != ''){
+				if(a == b && b == c){
+					console.log("MATCHED");
+					// console.log(a);
+					// console.log(b);
+					// console.log(c);
+					return true;
+				}else{
+					console.log("DID NOT MATCH");
+					// console.log(a);
+					// console.log(b);
+					// console.log(c);
+					return false;
+				}
+			}
+		}
+	}
+
+	event_function.initialize();
+
+	$('#tile1').click(function(){
+		if(arr[0] == '-'){
+			arr[0] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile2').click(function(){
+		if(arr[1] == '-'){
+			arr[1] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile3').click(function(){
+		if(arr[2] == '-'){
+			arr[2] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile4').click(function(){
+		if(arr[3] == '-'){
+			arr[3] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile5').click(function(){
+		if(arr[4] == '-'){
+			arr[4] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile6').click(function(){
+		if(arr[5] == '-'){
+			arr[5] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile7').click(function(){
+		if(arr[6] == '-'){
+			arr[6] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile8').click(function(){
+		if(arr[7] == '-'){
+			arr[7] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+	$('#tile9').click(function(){
+		if(arr[8] == '-'){
+			arr[8] = 'X';
+			event_function.set_text($(this));
+		}
+	});
+
+	// var interval = setInterval(function(){
+	// 	//var s = $('.square').position();
+	// 	var ww = $('.canvas').width();
+	// 	var wh = $('.canvas').height();
+	// 	var s = $('.square');
+	// 	var l = Math.floor((Math.random() * (ww-100)) + 0);
+	// 	var t = Math.floor((Math.random() * (wh-100)) + 0);
+	// 	var c = getRandomColor();
+	// 	s.css('left', l);
+	// 	s.css('top', t);
+	// 	s.css('background-color', c);
+	// }, 1000);
+
+	// function getRandomColor() {
+	//     var letters = '0123456789ABCDEF'.split('');
+	//     var color = '#';
+	//     for (var i = 0; i < 6; i++ ) {
+	//         color += letters[Math.floor(Math.random() * 16)];
+	//     }
+	//     return color;
+	// }
+</script>
+
+</html>
